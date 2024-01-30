@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "MSM(Multi Scalar Multiplication) calculation pkg on react native",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh"
   },
   "keywords": [],
@@ -21,4 +21,10 @@
       "import": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js"
     }
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   }
+}
