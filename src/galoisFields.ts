@@ -1,6 +1,6 @@
 interface PrimeGaloisFieldInterface {
     prime: number;
-    isContain(fieldElement: FieldElement): boolean;
+    isContained(fieldElement: FieldElement): boolean;
 }
 
 interface FieldElementInterface {
@@ -22,7 +22,7 @@ class PrimeGaloisField implements PrimeGaloisFieldInterface {
         this.prime = prime;
     }
 
-    isContain(fieldElement: FieldElement): boolean {
+    isContained(fieldElement: FieldElement): boolean {
         return 0 <= fieldElement.value && fieldElement.value < this.prime;
     }
 }
@@ -45,21 +45,21 @@ class FieldElement implements FieldElementInterface {
     }
 
     add(other: FieldElement): FieldElement {
-        if (!this.field.isContain(other)) {
+        if (!this.field.isContained(other)) {
             throw new Error(`Cannot add ${other} to ${this} in ${this.field}`);
         }
         return new FieldElement((this.value + other.value) % this.P(), this.field);
     }
 
     sub(other: FieldElement): FieldElement {
-        if (!this.field.isContain(other)) {
+        if (!this.field.isContained(other)) {
             throw new Error(`Cannot sub ${other} to ${this} in ${this.field}`);
         }
         return new FieldElement((this.value - other.value) % this.P(), this.field);
     }
 
     mul(other: FieldElement): FieldElement {
-        if (!this.field.isContain(other)) {
+        if (!this.field.isContained(other)) {
             throw new Error(`Cannot mul ${other} to ${this} in ${this.field}`);
         }
         return new FieldElement((this.value * other.value) % this.P(), this.field);
@@ -70,7 +70,7 @@ class FieldElement implements FieldElementInterface {
     }
 
     trueDiv(other: FieldElement): FieldElement {
-        if (!this.field.isContain(other)) {
+        if (!this.field.isContained(other)) {
             throw new Error(`Cannot trueDiv ${other} to ${this} in ${this.field}`);
         }
         return this.mul(other.pow(-1));

@@ -1,4 +1,4 @@
-export { EllipticCurve } from "./ellipticCurve";
+export { EllipticCurve, Point } from "./ellipticCurve";
 export { FieldElement, PrimeGaloisField } from "./galoisFields";
 
 export const hello = (name: string): string => {
