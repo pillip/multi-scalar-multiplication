@@ -1,6 +1,6 @@
 {
   "name": "multi-scalar-multiplication",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MSM(Multi Scalar Multiplication) calculation pkg on react native",
   "scripts": {
     "test": "jest",
