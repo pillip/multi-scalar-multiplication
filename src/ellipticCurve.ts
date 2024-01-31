@@ -4,12 +4,16 @@ interface EllipticCurveInterface {
     a: FieldElement;
     b: FieldElement;
     field : PrimeGaloisField;
+    isContained(point: Point): boolean;
 }
 
 interface PointInterface {
     x: FieldElement;
     y: FieldElement;
     curve: EllipticCurve;
+    isIdentity(): boolean;
+    add(other: Point): Point;
+    scalarMul(scalar: number): Point;
 };
 
 class EllipticCurve implements EllipticCurveInterface {
@@ -52,7 +56,7 @@ class Point implements PointInterface {
         return this.x.value == 0 && this.y.value == 0;
     }
 
-    add(other: Point): Point | undefined {
+    add(other: Point): Point {
         if (this.curve != other.curve) {
             throw new Error(`Two points are not on the same curve`);
         }
@@ -72,17 +76,6 @@ class Point implements PointInterface {
             return new Point(0, 0, this.curve);
         }
 
-        // general case
-        if (this.x.value != other.x.value) {
-            let s: FieldElement = other.y.sub(this.y).mul(other.x.sub(this.x).inv());
-            let x3: FieldElement = s.pow(2).sub(this.x).sub(other.x);
-            let y3: FieldElement = s.mul(this.x.sub(x3)).sub(this.y);
-
-            console.log(s, x3, y3);
-
-            return new Point(x3.value, y3.value, this.curve);
-        }
-
         // self == other        
         if ( this.x.value == other.x.value && this.y.value == other.y.value ) {
             // self.y == Infinity -> I
@@ -96,6 +89,36 @@ class Point implements PointInterface {
 
             return new Point(x3.value, y3.value, this.curve);
         }
+
+        // general case (this.x.value != other.x.value)
+        let s: FieldElement = other.y.sub(this.y).mul(other.x.sub(this.x).inv());
+        let x3: FieldElement = s.pow(2).sub(this.x).sub(other.x);
+        let y3: FieldElement = s.mul(this.x.sub(x3)).sub(this.y);
+
+        console.log(s, x3, y3);
+
+        return new Point(x3.value, y3.value, this.curve);
+    }
+
+    scalarMul(scalar: number): Point {
+        if (scalar < 0) {
+            return new Point(this.x.value, this.y.scalarMul(-1).value, this.curve).scalarMul(-scalar);
+        }
+
+        let result: Point = new Point(0, 0, this.curve);
+        let base: Point = new Point(this.x.value, this.y.value, this.curve);
+
+        while (scalar > 0) {
+            // if the last bit is 1, then multiply
+            if ( scalar % 2 == 1 ) {
+                result = result.add(base);
+            }
+
+            scalar = Math.floor(scalar / 2);
+            base = base.add(base);
+        }
+
+        return result;
     }
 }
 

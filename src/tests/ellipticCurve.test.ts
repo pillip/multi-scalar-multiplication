@@ -77,4 +77,17 @@ describe('Point class tests', () => {
 
         expect(result).toEqual(expected);
     });
+
+    it('scalarMul test', () => {
+        const point = new Point(3, 6, curve);
+        const negativePoint = new Point(3, 1, curve);
+        
+        const result = point.scalarMul(2);
+        const result1 = point.scalarMul(6);
+        const result2 = point.scalarMul(-3);        
+
+        expect(result).toEqual(point.add(point));
+        expect(result1).toEqual(point.add(point).add(point).add(point).add(point).add(point));
+        expect(result2).toEqual(negativePoint.add(negativePoint).add(negativePoint));
+    });
 });
