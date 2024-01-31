@@ -109,7 +109,7 @@ class Point implements PointInterface {
         let base: Point = new Point(this.x.value, this.y.value, this.curve);
 
         while (scalar > 0) {
-            // if the last bit is 1, then multiply
+            // if the last bit is 1, then add
             if ( scalar % 2 == 1 ) {
                 result = result.add(base);
             }
