@@ -11,8 +11,9 @@ interface FieldElementInterface {
     add(other: FieldElement): FieldElement;
     sub(other: FieldElement): FieldElement;
     mul(other: FieldElement): FieldElement;
+    scalarMul(n: number): FieldElement;
     pow(exponent: number): FieldElement;
-    trueDiv(other: FieldElement): FieldElement;
+    inv(): FieldElement;
 }
 
 class PrimeGaloisField implements PrimeGaloisFieldInterface {
@@ -44,36 +45,92 @@ class FieldElement implements FieldElementInterface {
         return this.field.prime;
     }
 
+    mod(value: number): number {
+        return value >= 0 ? value % this.P() : (value % this.P() + this.P()) % this.P();
+    }
+
     add(other: FieldElement): FieldElement {
         if (!this.field.isContained(other)) {
             throw new Error(`Cannot add ${other} to ${this} in ${this.field}`);
         }
-        return new FieldElement((this.value + other.value) % this.P(), this.field);
+
+        return new FieldElement(this.mod(this.value + other.value), this.field);
     }
 
     sub(other: FieldElement): FieldElement {
         if (!this.field.isContained(other)) {
             throw new Error(`Cannot sub ${other} to ${this} in ${this.field}`);
         }
-        return new FieldElement((this.value - other.value) % this.P(), this.field);
+
+        return new FieldElement(this.mod(this.value - other.value), this.field);
     }
 
     mul(other: FieldElement): FieldElement {
         if (!this.field.isContained(other)) {
             throw new Error(`Cannot mul ${other} to ${this} in ${this.field}`);
         }
-        return new FieldElement((this.value * other.value) % this.P(), this.field);
+
+        return new FieldElement(this.mod(this.value * other.value), this.field);
+    }
+
+    scalarMul(n: number): FieldElement {
+        return new FieldElement(this.mod(this.value * n), this.field);
     }
 
     pow(exponent: number): FieldElement {
-        return new FieldElement((this.value ** exponent) % this.P(), this.field);
+        if (exponent < 0) {
+            return this.inv().pow(-exponent);
+        }
+
+        let result: FieldElement = new FieldElement(1, this.field);
+        let base: FieldElement  =  new FieldElement(this.value, this.field);
+        while (exponent > 0) {
+            // if the last bit is 1, then multiply
+            if ( exponent % 2 == 1 ) {
+                result = result.mul(base);
+            }
+
+            exponent = Math.floor(exponent / 2);
+            base = base.mul(base);
+        }
+
+        return result;
     }
 
-    trueDiv(other: FieldElement): FieldElement {
-        if (!this.field.isContained(other)) {
-            throw new Error(`Cannot trueDiv ${other} to ${this} in ${this.field}`);
+    inv(): FieldElement {
+        // extended euclidean algorithm
+        let sp: number = 1;
+        let sc: number = 0;
+        let tp: number = 0;
+        let tc: number = 1;
+        let rp: number = this.value;
+        let rc: number = this.P();
+        let q: number;
+
+        for (let i = 0; i < 100; i++) {
+            let sn: number;
+            let tn: number;
+            let rn: number;
+
+            q = Math.floor(rp / rc);
+            rn = rp % rc;
+            rp = rc;
+            rc = rn;
+
+            if (rn == 0) {
+                return new FieldElement(this.mod(sc), this.field);
+            }
+
+            sn = sp - q * sc;
+            sp = sc;
+            sc = sn;
+
+            tn = tp - q * tc;
+            tp = tc;
+            tc = tn;
         }
-        return this.mul(other.pow(-1));
+
+        return new FieldElement(this.mod(sc), this.field);
     }
 }
 

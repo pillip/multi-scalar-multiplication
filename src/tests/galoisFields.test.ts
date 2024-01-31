@@ -55,6 +55,7 @@ describe('FieldElement class tests', () => {
 
         expect(element1.sub(element1)).toEqual(identity);
     });
+    
 
     it('Operation test', () => {
         let field = new PrimeGaloisField(5);
@@ -64,7 +65,10 @@ describe('FieldElement class tests', () => {
         expect(element1.add(element2)).toEqual(new FieldElement(1, field));
         expect(element1.sub(element2)).toEqual(new FieldElement(2, field));
         expect(element1.mul(element2)).toEqual(new FieldElement(3, field));
+        expect(element1.scalarMul(3)).toEqual(new FieldElement(2, field));
         expect(element1.pow(3)).toEqual(new FieldElement(4, field));
-        expect(element1.trueDiv(element2)).toEqual(new FieldElement(2, field));
+        expect(element1.pow(-2)).toEqual(new FieldElement(1, field));
+        expect(element1.inv()).toEqual(new FieldElement(4, field));
+        expect(element1.mul(element2.inv())).toEqual(new FieldElement(2, field));
     });
 });
