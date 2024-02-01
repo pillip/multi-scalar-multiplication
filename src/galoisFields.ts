@@ -1,38 +1,38 @@
 interface PrimeGaloisFieldInterface {
-  prime: number;
+  prime: bigint;
   isContained(fieldElement: FieldElement): boolean;
 }
 
 interface FieldElementInterface {
-  value: number;
+  value: bigint;
   field: PrimeGaloisField;
   valueOf(): string;
-  P(): number;
+  P(): bigint;
   add(other: FieldElement): FieldElement;
   sub(other: FieldElement): FieldElement;
   mul(other: FieldElement): FieldElement;
-  scalarMul(n: number): FieldElement;
-  pow(exponent: number): FieldElement;
+  scalarMul(n: bigint): FieldElement;
+  pow(exponent: bigint): FieldElement;
   inv(): FieldElement;
 }
 
 class PrimeGaloisField implements PrimeGaloisFieldInterface {
-  prime: number;
+  prime: bigint;
 
-  constructor(prime: number) {
+  constructor(prime: bigint) {
     this.prime = prime;
   }
 
   isContained(fieldElement: FieldElement): boolean {
-    return 0 <= fieldElement.value && fieldElement.value < this.prime;
+    return 0n <= fieldElement.value && fieldElement.value < this.prime;
   }
 }
 
 class FieldElement implements FieldElementInterface {
-  value: number;
+  value: bigint;
   field: PrimeGaloisField;
 
-  constructor(value: number, field: PrimeGaloisField) {
+  constructor(value: bigint, field: PrimeGaloisField) {
     this.value = value;
     this.field = field;
   }
@@ -41,11 +41,11 @@ class FieldElement implements FieldElementInterface {
     return "0x" + this.value.toString(16).padStart(64, "0");
   }
 
-  P(): number {
+  P(): bigint {
     return this.field.prime;
   }
 
-  mod(value: number): number {
+  mod(value: bigint): bigint {
     return value >= 0
       ? value % this.P()
       : ((value % this.P()) + this.P()) % this.P();
@@ -75,24 +75,24 @@ class FieldElement implements FieldElementInterface {
     return new FieldElement(this.mod(this.value * other.value), this.field);
   }
 
-  scalarMul(n: number): FieldElement {
+  scalarMul(n: bigint): FieldElement {
     return new FieldElement(this.mod(this.value * n), this.field);
   }
 
-  pow(exponent: number): FieldElement {
-    if (exponent < 0) {
+  pow(exponent: bigint): FieldElement {
+    if (exponent < 0n) {
       return this.inv().pow(-exponent);
     }
 
-    let result: FieldElement = new FieldElement(1, this.field);
+    let result: FieldElement = new FieldElement(1n, this.field);
     let base: FieldElement = new FieldElement(this.value, this.field);
-    while (exponent > 0) {
+    while (exponent > 0n) {
       // if the last bit is 1, then multiply
-      if (exponent % 2 == 1) {
+      if (exponent % 2n == 1n) {
         result = result.mul(base);
       }
 
-      exponent = Math.floor(exponent / 2);
+      exponent = exponent / 2n;
       base = base.mul(base);
     }
 
@@ -101,25 +101,25 @@ class FieldElement implements FieldElementInterface {
 
   inv(): FieldElement {
     // extended euclidean algorithm
-    let sp: number = 1;
-    let sc: number = 0;
-    let tp: number = 0;
-    let tc: number = 1;
-    let rp: number = this.value;
-    let rc: number = this.P();
-    let q: number;
+    let sp: bigint = 1n;
+    let sc: bigint = 0n;
+    let tp: bigint = 0n;
+    let tc: bigint = 1n;
+    let rp: bigint = this.value;
+    let rc: bigint = this.P();
+    let q: bigint;
 
     while (true) {
-      let sn: number;
-      let tn: number;
-      let rn: number;
+      let sn: bigint;
+      let tn: bigint;
+      let rn: bigint;
 
-      q = Math.floor(rp / rc);
+      q = rp / rc;
       rn = rp % rc;
       rp = rc;
       rc = rn;
 
-      if (rn == 0) {
+      if (rn == 0n) {
         return new FieldElement(this.mod(sc), this.field);
       }
 
