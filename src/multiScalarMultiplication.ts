@@ -20,12 +20,7 @@ class MultiScalarMultiplication implements MultiScalarMultiplicationInterface {
   chunkSize: number = 8; // 2 characters in hexadecimal
   bucketCounts: number = 2 ** this.chunkSize - 1;
 
-  constructor() {
-    // Define Curve
-    const a: bigint = 0n;
-    const b: bigint = 3n;
-    const p: bigint =
-      21888242871839275222246405745257275088696311157297823662689037894645226208583n;
+  constructor(a: bigint, b: bigint, p: bigint) {
     this.curve = new EllipticCurve(a, b, p);
   }
 

@@ -7,6 +7,11 @@ export { MultiScalarMultiplication, bigintPair } from "./multiScalarMultiplicati
 
 export const hello = (): void => {
     // for giving example
+    const a: bigint = 0n;
+    const b: bigint = 3n;
+    const p: bigint =
+      21888242871839275222246405745257275088696311157297823662689037894645226208583n;
+    
     const baseData: bigintPair[] = [];
     const scalarData: bigint[] = [];
 
@@ -16,7 +21,7 @@ export const hello = (): void => {
     scalarData.push(15004755199009710112284631964986966556476336056333019315030628511687640687855n);
     scalarData.push(15318266778559804796161468693805934699816248964181771373202677263788356091966n);
 
-    const msm = new MultiScalarMultiplication();
+    const msm = new MultiScalarMultiplication(a, b, p);
     msm.loadData(scalarData, baseData);
 
     const result: Point = msm.calculate();
